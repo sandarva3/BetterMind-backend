@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import UserRegistrationSerializer, ProfRegistrationSerializer
+from .serializers import UserRegistrationSerializer, ProfRegistrationSerializer, LoginSerializer
 
 
 '''
@@ -41,3 +41,18 @@ class ProfRegistrationAPIView(APIView):
             return Response({"message": "Prof registered successfully"}, status=status.HTTP_201_CREATED)
         return Response({'message': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
+
+class LoginAPIView(APIView):
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+            print(f"Logged in as: {user.username}")
+            # Example response: Returning user details
+            return Response({
+                "msg": "Login successful",
+                "username": user.username,
+                "userType": "Prof" if hasattr(user, 'profdata') else "User"
+            }, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
