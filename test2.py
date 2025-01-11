@@ -6,7 +6,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 django.setup()
 
 
-from solace.models import Prof
+from solace.models import Prof,User
 
 
 # prof2 = Prof.objects.get(id=3)
@@ -20,31 +20,66 @@ from solace.models import Prof
 
 print("THE DATA IN JSON FORMAT.")
 # print(json_data)
-data_list1 = []
 
-def fetch(profdata, profUname):
+
+profData_list = []
+userData_list = []
+
+def fetch(data, Uname, p):
     data_list2 = []
-    for data in profdata:
-        data_dict = {
-            'prof id': data.prof.id,
-            'questionNo': data.questionNo,
-            'question': data.questionText,
-            'answer': data.answer
-        }
-        data_list2.append(data_dict)
+    if p == True:
+        for d in data:
+            data_dict = {
+                'prof id': d.prof.id,
+                'questionNo': d.questionNo,
+                'question': d.questionText,
+                'answer': d.answer
+            }
+            data_list2.append(data_dict)
+        profData_list.append(data_list2)
+        
+        print(f"DONE for prof: {Uname}")
+    else:
+        for d in data:
+            data_dict = {
+                'user id': d.user.id,
+                'questionNo': d.questionNo,
+                'question': d.questionText,
+                'answer': d.answer
+            }
+            data_list2.append(data_dict)
+        userData_list.append(data_list2)
 
-    print(f"DONE for prof: {profUname}")
-    data_list1.append(data_list2)
-
-def get_data(profId):
-    prof = Prof.objects.get(id=profId)
-    profData = prof.profdata.all()
-    print(f"Fetching data of Prof: {profId}")
-    fetch(profData, prof.username)
+        print(f"DONE for user: {Uname}")
 
 
+def get_data(Id, p):
+    if p == True:
+        prof = Prof.objects.get(id=Id)
+        profData = prof.profdata.all()
+        uname = prof.username
+        print(f"Fetching data of Prof: {uname}")
+        fetch(profData, uname, p)
+    else:
+        user = User.objects.get(id=Id)
+        userData = user.userdata.all()
+        uname = user.username
+        print(f"Fetching data of User: {uname}")
+        fetch(userData, uname, p)
 
 
-json_output = json.dumps(data_list1, indent=5)
-print("THE OUTPUT IS = ")
-print(json_output)
+prof_ids = [2,3,13]
+for pid in prof_ids:
+    get_data(pid, p=True)
+
+user_ids = [14]
+for uid in user_ids:
+    get_data(uid, p=False)
+
+
+prof_Jsonoutput = json.dumps(profData_list, indent=5)
+user_Jsonoutput = json.dumps(userData_list, indent=5)
+print("Professionals data = ")
+print(prof_Jsonoutput)
+print("Users data = ")
+print(user_Jsonoutput)

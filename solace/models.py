@@ -36,7 +36,7 @@ class Prof(CustomUser):
 
 
 class UserData(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='userdata')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='userdata')
     questionNo = models.IntegerField()
     questionText = models.TextField()
     answer = models.TextField()
