@@ -11,7 +11,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         fields = ['username', 'email', 'password', 'fullname']
 
     def create(self, validated_data):
-        print("THE SERIALIZER PART")
+        print("User Serializer")
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
@@ -30,12 +30,13 @@ class ProfRegistrationSerializer(serializers.ModelSerializer):
         fields = ['username', 'email', 'password', 'fullname']
 
     def create(self, validated_data):
-        print("THE SERIALIZER PART")
+        print("Prof Serializer")
         prof = Prof.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
             password=validated_data['password'],
-            fullname=validated_data['fullname']
+            fullname=validated_data['fullname'],
+            user_type = 'prof'
         )
 
         return prof
@@ -46,6 +47,7 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
+        print("Login serializer")
         username = data.get('username')
         password = data.get('password')
 

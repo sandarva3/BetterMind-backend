@@ -48,11 +48,16 @@ class LoginAPIView(APIView):
         if serializer.is_valid():
             user = serializer.validated_data['user']
             print(f"Logged in as: {user.username}")
-            # Example response: Returning user details
+            #print(f"ATTRIBUTES: {user.__dict__}") To get all attributes of an object.
             return Response({
                 "msg": "Login successful",
                 "username": user.username,
-                "userType": "Prof" if hasattr(user, 'profdata') else "User"
+                "userType": "Prof" if (user.user_type == "prof") else "User"
             }, status=status.HTTP_200_OK)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(
+                {'msg': 'Invalid Username or password',
+                'error': serializer.errors
+                }, 
+                status=status.HTTP_400_BAD_REQUEST
+                )

@@ -3,7 +3,11 @@ from django.contrib.auth.models import AbstractUser
 
 class CustomUser(AbstractUser):
     fullname = models.CharField(max_length=45)
-
+    USER_TYPE_CHOICES = (
+        ('user', 'User'),
+        ('prof', 'Prof'),
+    )
+    user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES, default='user')
 
 
 class User(CustomUser):
@@ -43,10 +47,13 @@ class UserData(models.Model):
 
 
 class ProfData(models.Model):
-    prof = models.OneToOneField(Prof, on_delete=models.CASCADE, related_name='profdata')
+    prof = models.ForeignKey(Prof, on_delete=models.CASCADE, related_name='profdata')
     questionNo = models.IntegerField()
     questionText = models.TextField()
     answer = models.TextField()
+
+#    class Meta:
+#        ordering = ['questionNo']
 
     def __str__(self):
         return f"Profdata of {self.prof.username}"
