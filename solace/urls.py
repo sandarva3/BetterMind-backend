@@ -2,8 +2,12 @@ from django.urls import path
 # from .views import (
 #     registration_view
 # )
-from .views import RegistrationAPIView
+from .views import (
+    UserRegistrationAPIView,
+    ProfRegistrationAPIView
+)
 
 urlpatterns = [
-    path('register/', RegistrationAPIView.as_view(), name='register'),
+    path('register/user', UserRegistrationAPIView.as_view(), name='userRegistration'),
+    path('register/prof', ProfRegistrationAPIView.as_view(), name="profRegistration")
 ]
