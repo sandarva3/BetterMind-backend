@@ -4,18 +4,27 @@ from django.contrib.auth.models import AbstractUser
 class CustomUser(AbstractUser):
     fullname = models.CharField(max_length=45)
 
+
+
+class User(CustomUser):
+    best_fit_profs = models.ManyToManyField(
+        'Prof',
+        related_name= 'matchedByUser',
+        blank=True
+    )
+
     def __str__(self):
         return self.username
 
 
 
-class User(CustomUser):
-    pass
-
-
-
 class Prof(CustomUser):
     verified = models.BooleanField(default=False)
+    best_fit_users = models.ManyToManyField(
+        'User',
+        related_name='matched_by_profs',
+        blank=True
+    )
 
     def __str__(self):
         return self.username
