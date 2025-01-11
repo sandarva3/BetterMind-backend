@@ -9,7 +9,7 @@ class CustomUser(AbstractUser):
 class User(CustomUser):
     best_fit_profs = models.ManyToManyField(
         'Prof',
-        related_name= 'matchedByUser',
+        related_name= 'matched_by_user',
         blank=True
     )
 
