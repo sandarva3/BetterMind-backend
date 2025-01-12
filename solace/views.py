@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import UserRegistrationSerializer, ProfRegistrationSerializer, LoginSerializer
+from .serializers import UserRegistrationSerializer, ProfRegistrationSerializer, LoginSerializer, AnswerSubmitSerializer
 
 
 '''
@@ -17,7 +17,6 @@ def registration_view(request):
     else:
         return Response({'msg': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
 '''
-
 class UserRegistrationAPIView(APIView):
     def post(self, request):
         print("WORKED")
@@ -61,3 +60,24 @@ class LoginAPIView(APIView):
                 }, 
                 status=status.HTTP_400_BAD_REQUEST
                 )
+
+
+class AnswerSubmitAPIView(APIView):
+    def post(self, request):
+        serializer = AnswerSubmitSerializer(data=request.data)
+        print("AnswerSubmitAPIView triggered.")
+        if serializer.is_valid():
+            profId = serializer.validated_data['profId']
+            answers = serializer.validated_data['answers']
+            # (processing here to be done)
+            i = 1
+            for key,value in answers.items():
+                print(f"{i}) Key: {key}, Value: {value}")
+                i += 1
+            processed_data = {key: f"Processed: {value}" for key, value in answers.items()}
+            return Response({
+                "msg": "Answers processed successfully",
+                "profId": profId,
+                "processedAnswers": processed_data
+            }, status=status.HTTP_200_OK)
+        return Response({'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
