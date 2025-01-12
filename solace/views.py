@@ -2,7 +2,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import UserRegistrationSerializer, ProfRegistrationSerializer, LoginSerializer, AnswerSubmitSerializer
-
+from .models import User,UserData,Prof,ProfData
+import json
+from geminitest import rank_professionals_with_gemini
 
 '''
 def registration_view(request):
@@ -62,22 +64,106 @@ class LoginAPIView(APIView):
                 )
 
 
+userQuestions = [
+    "How have you been feeling lately?",
+    "How long has this been going on for you?",
+    "Have you ever talked to a therapist or counselor before? If yes, how did it go?",
+    "Did something happen recently that might have triggered how you’re feeling?",
+    "Is this affecting your work, relationships, or day-to-day life?",
+    "Are you taking any medications or trying anything else to help with this?",
+    "What’s something you do that helps you feel even a little better?",
+    "Have you gone through any big life changes lately, like a breakup, loss, or something else?",
+    "Have you ever had thoughts of hurting yourself or giving up? If yes, did you talk to anyone about it?",
+    "Just so we can understand better—how old are you, and how do you identify (e.g., male, female, non-binary)?",
+]
+
+
+profData_list = []
+userData_list = []
+def fetch(data, Uname, p):
+    data_list2 = []
+    if p == True:
+        for d in data:
+            data_dict = {
+                'prof id': d.prof.id,
+                'questionNo': d.questionNo,
+                'question': d.questionText,
+                'answer': d.answer
+            }
+            data_list2.append(data_dict)
+        profData_list.append(data_list2)
+        
+        print(f"DONE for prof: {Uname}")
+    else:
+        for d in data:
+            data_dict = {
+                'user id': d.user.id,
+                'questionNo': d.questionNo,
+                'question': d.questionText,
+                'answer': d.answer
+            }
+            data_list2.append(data_dict)
+        userData_list.append(data_list2)
+        print(f"DONE for user: {Uname}")
+
+def get_data(Id, p):
+    if p == True:
+        prof = Prof.objects.get(id=Id)
+        profData = prof.profdata.all()
+        uname = prof.username
+        print(f"Fetching data of Prof: {uname}")
+        fetch(profData, uname, p)
+    else:
+        user = User.objects.get(id=Id)
+        userData = user.userdata.all()
+        uname = user.username
+        print(f"Fetching data of User: {uname}")
+        fetch(userData, uname, p)
+
+    
 class AnswerSubmitAPIView(APIView):
     def post(self, request):
         serializer = AnswerSubmitSerializer(data=request.data)
         print("AnswerSubmitAPIView triggered.")
         if serializer.is_valid():
-            profId = serializer.validated_data['profId']
+            userId = serializer.validated_data['userId']
             answers = serializer.validated_data['answers']
-            # (processing here to be done)
-            i = 1
-            for key,value in answers.items():
-                print(f"{i}) Key: {key}, Value: {value}")
-                i += 1
-            processed_data = {key: f"Processed: {value}" for key, value in answers.items()}
+
+            print(f"Received userId: {userId}")
+            user = User.objects.get(id=userId)
+            for i in range(0,10):
+                UserData.objects.create(user=user, questionNo=i, questionText=userQuestions[i], answer=answers[i])
+                print(f"Set answer {i} for user: {user.username}.")
+            
+            print("getting data of users.")
+            get_data(user.id, p=False)
+            prof_ids = [prof.id for prof in Prof.objects.all()]
+            print("getting data of professionals.")
+            for id in prof_ids:
+                get_data(id, p=True)
+            
+            user_Jsonoutput = json.dumps(userData_list, indent=2)
+            prof_Jsonoutput = json.dumps(profData_list, indent=2)
+            print("Prof data: ")
+            print(prof_Jsonoutput)
+            print("User data: ")
+            print(user_Jsonoutput)
+            
+            print("SENDING TO GEMINI.")
+            matchingProfs = rank_professionals_with_gemini(user_Jsonoutput, prof_Jsonoutput)
+            print(f"THE RESULT From Gemini: ")
+            print(matchingProfs)
+            matchingProfs_ids = [int(profId) for profId in matchingProfs.split(",")]
+            matchingProfs_names = []
+            for j in matchingProfs_ids:
+                object = Prof.objects.get(id=j)
+                matchingProfs_names.append(object.username)
+            
             return Response({
-                "msg": "Answers processed successfully",
-                "profId": profId,
-                "processedAnswers": processed_data
+                "msg": "Answers received successfully",
+                #"profId": profId,
+                "usernames": matchingProfs_names,
+                #"answers": answers
             }, status=status.HTTP_200_OK)
         return Response({'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+

@@ -33,15 +33,24 @@ def rank_professionals_with_gemini(user_data, prof_data):
 
     # Extract relevant professional data
     professionals = []
+
     for prof in prof_data:
-        prof_info = {
-            "id": prof[0]["prof id"],
-            "expertise": next((item["answer"] for item in prof if "expertise" in item["question"].lower()), ""),
-            "experience": next((item["answer"] for item in prof if "patients" in item["question"].lower()), ""),
-            "specialization": next((item["answer"] for item in prof if "problems" in item["question"].lower()), ""),
-            "age_group": next((item["answer"] for item in prof if "age patients" in item["question"].lower()), "")
-        }
-        professionals.append(prof_info)
+        if not prof:  # Check if the list is empty
+            print("Warning: Empty prof data encountered, skipping.")
+            continue  # Skip to the next iteration
+        
+        try:
+            prof_info = {
+                "id": prof[0]["prof id"],
+                "expertise": next((item["answer"] for item in prof if "expertise" in item["question"].lower()), ""),
+                "experience": next((item["answer"] for item in prof if "patients" in item["question"].lower()), ""),
+                "specialization": next((item["answer"] for item in prof if "problems" in item["question"].lower()), ""),
+                "age_group": next((item["answer"] for item in prof if "age patients" in item["question"].lower()), "")
+            }
+            professionals.append(prof_info)
+        except (IndexError, KeyError) as e:
+            print(f"Error processing prof data: {prof}. Error: {e}")
+            continue  # Skip problematic entries and move on
 
     # Construct the prompt for Gemini
     prompt = f"""

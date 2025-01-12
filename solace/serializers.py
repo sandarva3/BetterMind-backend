@@ -17,7 +17,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             fullname=validated_data['fullname']
         )
         return user
-    
+
 
 class ProfRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -51,10 +51,10 @@ class LoginSerializer(serializers.Serializer):
 
 
 class AnswerSubmitSerializer(serializers.Serializer):
-    print("AnswerSubmitAPIView triggered.")
-    profId = serializers.IntegerField()
-    answers = serializers.DictField(
+    userId = serializers.IntegerField()
+    answers = serializers.ListField(
         child=serializers.CharField(),
-        allow_empty=False,
-        help_text="A dict of answers with keys like 'answer1', 'answer2', ..."
+        min_length=10,
+        max_length=10,
+        help_text="A list of 10 answers."
     )
