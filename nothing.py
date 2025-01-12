@@ -68,17 +68,29 @@ prof_answers = [
 ]
 
 
-
 user1 = User.objects.get(id=14)
-#prof = Prof.objects.get(id=13)
-for i in range (len(user_questions)):
-    print(f"Data Entered: {i}")
-    UserData.objects.create(user=user1,
+prof = Prof.objects.get(id=3)
+userType ='p'
+def createData(type):
+    if type == 'p':
+        print(f"Creating Prof Data of prof:{prof.username} with id: {prof.id}")
+        for i in range (len(prof_questions)):
+            print(f"Data Entered: {i}")
+            ProfData.objects.create(prof=prof,
+                    questionNo=i,
+                    questionText=prof_questions[i],
+                    answer=prof_answers[i]
+                )
+    else:
+        print("Creating User Data.")
+        for i in range (len(user_questions)):
+            print(f"Data Entered: {i}")
+            UserData.objects.create(user=user1,
             questionNo=i,
             questionText=user_questions[i],
             answer=user_answers[i]
         )
-
+createData(userType)
 # prof1 = Prof.objects.get(id=3)
 # daniel = Prof.objects.get(id=2)
 # for i in range(0, 10):

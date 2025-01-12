@@ -26,7 +26,7 @@ class UserRegistrationAPIView(APIView):
             user = serializer.save()
             print(f"User Id is: {user.id}")
             print(f"The username is {user.username}")
-            return Response({"message": "User registered successfully"}, status=status.HTTP_201_CREATED)
+            return Response({"msg": "User registered successfully"}, status=status.HTTP_201_CREATED)
         return Response({'message': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
     
 
@@ -38,7 +38,7 @@ class ProfRegistrationAPIView(APIView):
             prof = serializer.save()
             print(f"Prof Id is: {prof.id}")
             print(f"The username is {prof.username}")
-            return Response({"message": "Prof registered successfully"}, status=status.HTTP_201_CREATED)
+            return Response({"msg": "Prof registered successfully"}, status=status.HTTP_201_CREATED)
         return Response({'message': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 

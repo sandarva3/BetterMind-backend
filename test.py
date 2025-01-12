@@ -1,5 +1,6 @@
 import requests
-
+from testkey import KEY
+print(f"THE KEY IS: {KEY}")
 url = "http://127.0.0.1:8000/login"
 headers = {'Content-Type': 'application/json'}
 

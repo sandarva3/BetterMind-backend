@@ -1,6 +1,7 @@
 import os
 import django
 import json
+from geminitest import rank_professionals_with_gemini
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 django.setup()
@@ -69,6 +70,7 @@ def get_data(Id, p):
 
 
 prof_ids = [2,3,13]
+#prof_ids = [2,13]
 for pid in prof_ids:
     get_data(pid, p=True)
 
@@ -77,9 +79,21 @@ for uid in user_ids:
     get_data(uid, p=False)
 
 
-prof_Jsonoutput = json.dumps(profData_list, indent=5)
-user_Jsonoutput = json.dumps(userData_list, indent=5)
+prof_Jsonoutput = json.dumps(profData_list, indent=2)
+user_Jsonoutput = json.dumps(userData_list, indent=2)
 print("Professionals data = ")
 print(prof_Jsonoutput)
 print("Users data = ")
 print(user_Jsonoutput)
+
+print("SENDING TO Gemini")
+matchingProfs = rank_professionals_with_gemini(user_Jsonoutput, prof_Jsonoutput)
+print(f"THE RESULT From Gemini: ")
+print(matchingProfs)
+ids = [int(profId) for profId in matchingProfs.split(",")]
+print(f"The Ids are: {ids}")
+print("The usernames are: ")
+for i in ids:
+    object = Prof.objects.get(id=i)
+    name = object.username
+    print(name)
