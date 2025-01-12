@@ -63,7 +63,6 @@ class LoginAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
                 )
 
-
 userQuestions = [
     "How have you been feeling lately?",
     "How long has this been going on for you?",
@@ -76,7 +75,18 @@ userQuestions = [
     "Have you ever had thoughts of hurting yourself or giving up? If yes, did you talk to anyone about it?",
     "Just so we can understand better—how old are you, and how do you identify (e.g., male, female, non-binary)?",
 ]
-
+professionalQuestions = [
+    "What’s your main area of expertise (like psychology, psychiatry, or something else)?",
+    "How long have you been working in mental health?",
+    "Are there certain issues (like anxiety, trauma, or depression) you feel you’re best at helping with?",
+    "Do you prefer working with any specific age groups, like teens, adults, or seniors?",
+    "What kind of therapy do you usually use (like CBT, mindfulness, etc.)?",
+    "Have you done online or virtual sessions before? How do you feel about them?",
+    "Have you worked with people dealing with big issues like trauma, abuse, or major life changes?",
+    "Do you work on your own or with a clinic/hospital?",
+    "Have you taken any extra training, like for trauma therapy or handling anxiety?",
+    "How do you usually handle it when someone is struggling with really tough thoughts or feelings, like self-harm?",
+]
 
 profData_list = []
 userData_list = []

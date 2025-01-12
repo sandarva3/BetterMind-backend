@@ -1,6 +1,47 @@
 import google.generativeai as genai
 import json
+#from .apiKey import googleKey
+
+
 googleKey = "AIzaSyB9yO2zL8rVmeWrzR3qhe3T7yd5Z7AUq5E"
+
+def rank_professionals_with_gemini(user_data, prof_data):
+    """
+    Ranks professionals based on user data using Google AI's Gemini model.
+
+    Args:
+        user_data (str): JSON string containing user data.
+        prof_data (str): JSON string containing professional data.
+
+    Returns:
+        str: IDs of matching professionals.
+    """
+    genai.configure(api_key=googleKey)
+
+    prompt = f"""
+    You are an expert at matching users with professionals based on their needs.
+
+    User Data:
+    {user_data}
+
+    Professionals:
+    {prof_data}
+
+    EXTREMELY IMPORTANT: Return only the IDs of the matching professionals in a comma-separated format. Example: 1,2,3
+    """
+
+    try:
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        print("Generating response from Gemini...")
+        response = model.generate_content(prompt)
+        return response.text.strip()
+    except Exception as e:
+        print(f"Error generating response: {str(e)}")
+        return "Error generating response"
+
+
+
+'''
 
 def rank_professionals_with_gemini(user_data, prof_data):
     """
@@ -76,3 +117,5 @@ def rank_professionals_with_gemini(user_data, prof_data):
     except Exception as e:
         print(f"Error generating response: {str(e)}")
         return "Error generating response"
+
+'''
