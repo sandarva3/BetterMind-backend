@@ -3,7 +3,7 @@ import json
 #from .apiKey import googleKey
 
 
-googleKey = "AIzaSyB9yO2zL8rVmeWrzR3qhe3T7yd5Z7AUq5E"
+googleKey = "Google API key here"
 
 def rank_professionals_with_gemini(user_data, prof_data):
     """
